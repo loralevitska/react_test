@@ -23,19 +23,33 @@ import { loginUser } from '../../store/UserSlice';
 
 const defaultTheme = createTheme();
 
-export default function SignIn() {
+type FormValues = {
+    email: string,
+    password: string,
+};
+
+type State = {
+    user: {
+        isLoading: boolean,
+        error: string,
+        user: {},
+    }
+};
+
+export const SignIn: React.FC = () => {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const navigate = useNavigate();
 
-  const { isLoading, error } = useSelector(state => state.user);
+  const { isLoading, error } = useSelector((state: State) => state.user);
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values: FormValues) => {
     const userCredentials = {
       email: values.email,
       password: values.password,
     };
 
-    dispatch(loginUser(userCredentials)).then(result => {
+    // @ts-ignore
+      dispatch(loginUser(userCredentials)).then(result => {
       if (result.payload) {
         navigate('/');
       }

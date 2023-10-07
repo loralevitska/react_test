@@ -1,14 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { signIn, signUp } from '../api';
-/* eslint-disable */
 
 export const loginUser = createAsyncThunk(
   '/login',
   async (userCredentials) => {
     const request = await signIn(userCredentials);
-
-    // eslint-disable-next-line no-console
-    console.log('request -----', request);
 
     return request.data.data;
   },
@@ -68,9 +64,6 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(signupUser.fulfilled, (state, action) => {
-
-        console.log('action.payload-----', action.payload);
-
         if (!action.payload.success) {
           state.loading = false;
           state.user = null;
@@ -84,9 +77,6 @@ const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.user = null;
-
-        // eslint-disable-next-line no-console
-        console.log('action.error.message', action.error?.message);
 
         if (action.error.message === 'Request failed with status code 401') {
           state.error = 'Access denied! Invalid credentials';

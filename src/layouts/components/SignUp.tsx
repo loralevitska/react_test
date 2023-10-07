@@ -17,9 +17,26 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, CircularProgress } from '@mui/material';
 /* eslint-disable */
 import * as Yup from 'yup';
-require('yup-phone');
 import { Formik } from 'formik';
 import { signupUser } from '../../store/UserSlice';
+
+require('yup-phone');
+
+type FormValues = {
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string,
+  phoneNumber: string,
+};
+
+type State = {
+  user: {
+    isLoading: boolean,
+    error: string,
+    user: {},
+  }
+};
 
 const defaultTheme = createTheme();
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -27,26 +44,9 @@ const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2
 export default function SignUp() {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const navigate = useNavigate();
-  const { error, isLoading } = useSelector(state => state.user);
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  //
-  //   const userValues = {
-  //     email: data.get('email'),
-  //     password: data.get('password'),
-  //     firstName: data.get('firstName'),
-  //     lastName: data.get('lastName'),
-  //   };
-  //
-  //   dispatch(signupUser(userValues)).then(result => {
-  //     if (!result.payload?.message) {
-  //       navigate('/');
-  //     }
-  //   });
-  // };
+  const { error, isLoading } = useSelector((state: State) => state.user);
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values: FormValues) => {
     const userValues = {
       email: values.email,
       password: values.password,
@@ -73,9 +73,7 @@ export default function SignUp() {
           onSubmit={(values, { setSubmitting }) => {
             setSubmitting(true);
             handleSubmit(values);
-            console.log('values', values);
           }}
-
           validationSchema={Yup.object().shape({
             firstName: Yup.string()
               .min(2, 'Too Short!')
@@ -86,7 +84,7 @@ export default function SignUp() {
               .max(50, 'Too Long!')
               .required('Last name is required'),
             phoneNumber: Yup.string()
-                .matches(phoneRegExp, 'Phone number is not valid'),
+              .matches(phoneRegExp, 'Phone number is not valid'),
             password: Yup.string()
               .min(6, 'Too Short!')
               .max(50, 'Too Long!')
@@ -103,11 +101,11 @@ export default function SignUp() {
               isSubmitting,
               handleChange,
               handleBlur,
+              // eslint-disable-next-line no-shadow
               handleSubmit,
               handleReset,
             } = props;
 
-            console.log('errors', errors);
             return (
               <form onSubmit={handleSubmit}>
                 <Box
@@ -167,7 +165,9 @@ export default function SignUp() {
                           value={values.phoneNumber}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          helperText={(errors.phoneNumber && touched.phoneNumber) && errors.phoneNumber}
+                          helperText={
+                            (errors.phoneNumber && touched.phoneNumber) && errors.phoneNumber
+                          }
                         />
                       </Grid>
                       <Grid item xs={12}>

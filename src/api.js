@@ -10,9 +10,13 @@ const config = {
 };
 
 export const signUp = (user) => {
-  return axios.post(`${BASE_URL}/users`, user);
+  return axios.post(`${BASE_URL}`, user);
+};
+
+export const getFeeds = ({ from, to }) => {
+  return axios.get(`${BASE_URL}?from=${from}&to=${to}`);
 };
 
 export const signIn = (data) => {
-  return axios.post(`${BASE_URL}/users/login`, data);
+  return axios.post(`${BASE_URL}/login`, data);
 };

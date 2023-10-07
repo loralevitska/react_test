@@ -12,11 +12,22 @@ import { logoutUser } from '../../store/UserSlice';
 
 const defaultTheme = createTheme();
 
+type State = {
+  user: {
+    isLoading: boolean,
+    error: string,
+    user: {
+      firstName: string,
+      lastName: string,
+    },
+  }
+};
+
 function Header() {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const navigate = useNavigate();
 
-  const { user } = useSelector(state => state.user);
+  const { user } = useSelector((state: State) => state.user);
 
   // eslint-disable-next-line no-console
   console.log('user', user);

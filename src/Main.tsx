@@ -6,7 +6,7 @@ import Contact from './layouts/contact/Contact';
 import Home from './layouts/home/Home';
 import About from './layouts/about/About';
 import SignUp from './layouts/components/SignUp';
-import SignIn from './layouts/components/SignIn';
+import { SignIn } from './layouts/components/SignIn';
 
 function Main() {
   return (

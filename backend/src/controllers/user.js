@@ -1,24 +1,45 @@
 const jwt = require('jsonwebtoken');
+const RSSParser = require('rss-parser');
 const userService = require('../services/user');
 
-const verifyJwt = (req, res, next) => {
-  const token = req.headers['access-token'];
+const feedUrl = 'https://netflixtechblog.com/feed';
+const parser = new RSSParser();
 
-  if (!token) {
-    return res.status(401);
-  }
-
-  jwt.verify(token, 'jwtSecretKey', (err, decoded) => {
-    if (err) {
-      res.json('Not Authenticated');
-    } else {
-      req.userId = decoded.id;
-      next();
-    }
-  });
-};
+// const verifyJwt = (req, res, next) => {
+//   const token = req.headers['access-token'];
+//
+//   if (!token) {
+//     return res.status(401);
+//   }
+//
+//   jwt.verify(token, 'jwtSecretKey', (err, decoded) => {
+//     if (err) {
+//       res.json('Not Authenticated');
+//     } else {
+//       req.userId = decoded.id;
+//       next();
+//     }
+//   });
+// };
 
 const userController = {
+  getFeeds: async (req, res) => {
+    try {
+      const { from, to } = req.query;
+      const data = await parser.parseURL(feedUrl);
+
+      return res.json({
+        success: true,
+        data: {
+          feed: data,
+          count: data.items.length,
+          items: data.items.slice(from, to),
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error?.message, error });
+    }
+  },
   findAll: async (req, res) => {
     try {
       const data = await userService.findAll();

@@ -9,6 +9,7 @@ module.exports = {
     'react/self-closing-comp': 0,
     'react/display-name': 0,
     'global-require': 0,
+    '@typescript-eslint/no-explicit-any': 'off',
     'no-param-reassign': ['error', {
       props: true,
       ignorePropertyModificationsFor: [

@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Sequelize } = require('sequelize');
-// import Sequelize from 'sequelize';
+/* eslint-disable */
 
 const sequelize = new Sequelize('feed_parser', 'root', 'rootroot', {
   host: 'localhost',
