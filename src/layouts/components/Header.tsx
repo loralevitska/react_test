@@ -71,6 +71,16 @@ function Header() {
             >
               About
             </Link>
+            {user && (
+              <Link
+                variant="button"
+                color="text.primary"
+                href="/feeds"
+                sx={{ my: 1, mx: 1.5 }}
+              >
+                Feeds
+              </Link>
+            )}
           </nav>
           {user ? (
             <Button onClick={handleLogout} variant="outlined" sx={{ my: 1, mx: 1.5 }}>

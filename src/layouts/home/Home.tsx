@@ -6,6 +6,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import { Box, CircularProgress } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 import Header from '../components/Header';
 import { getFeeds } from '../../api';
 import { Feed } from '../components/Feed';
@@ -32,6 +33,12 @@ function Home() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  // const handleAuth = () => {
+  //   axios.get('http:http://localhost:5005/api/v1/checkAuth')
+  //       .then(res => console.log(res))
+  //       .catch(err => console.log(err));
+  // }
 
   useEffect(() => {
     setIsLoading(true);

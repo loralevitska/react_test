@@ -27,8 +27,6 @@ const userService = {
     try {
       const data = await User.findOne({ where: { email, password } });
 
-      // eslint-disable-next-line no-console
-      console.log('data', data);
       if (!data) {
         return new Error('Email or password are invalid');
       }

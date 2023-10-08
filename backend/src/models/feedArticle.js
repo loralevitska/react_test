@@ -15,20 +15,35 @@ module.exports = (sequelize, DataTypes) => {
   }
   FeedArticle.init({
     title: DataTypes.STRING,
-    feedId: DataTypes.INTEGER,
-    creator: DataTypes.STRING,
-    link: DataTypes.STRING,
-    pubDate: DataTypes.STRING,
-    contentEncodedSnippet: DataTypes.STRING,
-    guid: DataTypes.STRING,
-    isoDate: DataTypes.STRING,
-    dcCreator: DataTypes.STRING,
+    feedId: {
+      type: DataTypes.INTEGER,
+    },
+    creator: {
+      type: DataTypes.STRING,
+    },
+    link: {
+      type: DataTypes.STRING,
+    },
+    pubDate: {
+      type: DataTypes.STRING,
+    },
+    contentEncodedSnippet: {
+      type: DataTypes.STRING,
+    },
+    guid: {
+      type: DataTypes.STRING,
+    },
+    isoDate: {
+      type: DataTypes.STRING,
+    },
+    dcCreator: {
+      type: DataTypes.STRING,
+    },
   }, {
     sequelize,
     modelName: 'FeedArticle',
     paranoid: true,
     timestamps: true,
-    underscored: true,
   });
 
   return FeedArticle;

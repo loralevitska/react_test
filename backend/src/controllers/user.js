@@ -1,44 +1,32 @@
 const jwt = require('jsonwebtoken');
-const RSSParser = require('rss-parser');
 const userService = require('../services/user');
+/* eslint-disable */
 
-const feedUrl = 'https://netflixtechblog.com/feed';
-const parser = new RSSParser();
+// const feedUrl = 'https://netflixtechblog.com/feed';
+const feedUrl = 'https://www.freecodecamp.org/news/rss/';
 
-// const verifyJwt = (req, res, next) => {
-//   const token = req.headers['access-token'];
-//
-//   if (!token) {
-//     return res.status(401);
-//   }
-//
-//   jwt.verify(token, 'jwtSecretKey', (err, decoded) => {
-//     if (err) {
-//       res.json('Not Authenticated');
-//     } else {
-//       req.userId = decoded.id;
-//       next();
-//     }
-//   });
-// };
 
 const userController = {
-  getFeeds: async (req, res) => {
-    try {
-      const { from, to } = req.query;
-      const data = await parser.parseURL(feedUrl);
+  // eslint-disable-next-line consistent-return
+  verifyJwt: (req, res, next) => {
+    const token = req.headers['access-token'];
 
-      return res.json({
-        success: true,
-        data: {
-          feed: data,
-          count: data.items.length,
-          items: data.items.slice(from, to),
-        },
-      });
-    } catch (error) {
-      return res.status(500).json({ success: false, message: error?.message, error });
+    if (!token) {
+      return res.status(401);
     }
+
+    jwt.verify(token, 'jwtSecretKey', (err, decoded) => {
+      if (err) {
+        res.json('Not Authenticated');
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        req.userId = decoded.id;
+        next();
+      }
+    });
+  },
+  checkAuth: async (req, res) => {
+    return res.json('Authenticated');
   },
   findAll: async (req, res) => {
     try {
@@ -63,11 +51,10 @@ const userController = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
-
       const data = await userService.login(email, password);
 
       if (data?.id) {
-        const token = jwt.sign({ id: data?.id }, 'jwtSecretKey', { expiresIn: 300 });
+        const token = jwt.sign({ id: data?.id }, 'jwtSecretKey', { expiresIn: 3000 });
 
         return res.json({ success: true, token, data });
       }
