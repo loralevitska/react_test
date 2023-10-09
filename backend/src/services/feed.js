@@ -88,11 +88,8 @@ const feedService = {
   },
   updateById: async ({ title, id }) => {
     try {
-      console.log('----');
-      console.log('{ title, id }', { title, id });
       const feed = await FeedArticle.findOne({ where: { id: +id } });
 
-      console.log('feed', feed);
       if (!feed) {
         return new Error('Feed do not found');
       }

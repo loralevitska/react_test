@@ -27,8 +27,18 @@ type State = {
   user: {
     isLoading: boolean,
     error: string,
-    user: {},
+    user: {
+      id: number,
+    },
   }
+};
+
+type FeedType = {
+  id: number,
+  title: string,
+  link: string,
+  isoDate: string,
+  pubDate: string,
 };
 
 function useDebounce<T>(
@@ -65,8 +75,6 @@ function Home() {
     pageSize: Number(searchParams.get('pageSize')) || PAGE_SIZE,
   });
 
-  // eslint-disable-next-line no-console
-  console.log('user', user);
   useEffect(() => {
     setIsLoading(true);
     getFeeds(
@@ -187,7 +195,7 @@ function Home() {
           columns={6}
         >
           {items.length
-                    && items.map(feedItem => {
+                    && items.map((feedItem: FeedType) => {
                       return user?.id ? (
                         <FeedAdminCard
                           key={feedItem.isoDate}

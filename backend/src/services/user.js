@@ -1,6 +1,7 @@
 const { User } = require('../models/index');
 
 const userService = {
+  // eslint-disable-next-line consistent-return,no-async-promise-executor
   findAll: () => new Promise(async (resolve, reject) => {
     try {
       const data = await User.findAll();
@@ -10,6 +11,7 @@ const userService = {
       reject(error);
     }
   }),
+  // eslint-disable-next-line consistent-return,no-async-promise-executor
   findById: (id) => new Promise(async (resolve, reject) => {
     try {
       const data = await User.findByPk(id);
@@ -36,13 +38,14 @@ const userService = {
       return error;
     }
   },
+
   create: ({
     email,
     password,
     firstName,
     lastName,
     phoneNumber,
-    // eslint-disable-next-line no-async-promise-executor
+    // eslint-disable-next-line consistent-return,no-async-promise-executor
   }) => new Promise(async (resolve, reject) => {
     try {
       const user = await User.findOne({ where: { email } });
@@ -93,6 +96,7 @@ const userService = {
       return new Promise((resolve, reject) => reject(error));
     }
   },
+  // eslint-disable-next-line consistent-return,no-async-promise-executor
   deleteById: (id) => new Promise(async (resolve, reject) => {
     try {
       const user = await User.findByPk(id);

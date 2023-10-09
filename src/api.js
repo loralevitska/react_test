@@ -36,15 +36,9 @@ export const getUsers = () => {
 };
 
 export const editFeedTitle = ({ id, title }) => {
-  // eslint-disable-next-line no-console
-  console.log('----', { id, title });
-
   return axiosUserInstance.put(`${BASE_URL}/feed/${id}`, { title });
 };
 
 export const deleteFeed = ({ id }) => {
-  // eslint-disable-next-line no-console
-  console.log('----', { id });
-
   return axiosUserInstance.delete(`${BASE_URL}/feed/${id}`);
 };

@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
 import { useNavigate } from 'react-router-dom';
 import { Alert, CircularProgress } from '@mui/material';
-/* eslint-disable */
+
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { signupUser } from '../../store/UserSlice';

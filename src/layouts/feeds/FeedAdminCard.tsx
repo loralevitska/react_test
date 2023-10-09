@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import {
   Card,
@@ -7,7 +7,6 @@ import {
   Box,
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
-/*eslint-disable*/
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -19,14 +18,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 
-import {deleteFeed, editFeedTitle} from '../../api';
+import { deleteFeed, editFeedTitle } from '../../api';
 
 type Props = {
   feed: {
+    id: number,
     title: string,
     link: string,
     pubDate: string,
   };
+  setItems: React.Dispatch<React.SetStateAction<any>>
 };
 
 export const FeedAdminCard: React.FC<Props> = ({ feed, setItems }) => {
@@ -36,48 +37,47 @@ export const FeedAdminCard: React.FC<Props> = ({ feed, setItems }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [feedTitle, setFeedTitle] = React.useState(title);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const { current: handleOpen } = useRef(() => setOpen(true));
+  const { current: handleClose } = useRef(() => setOpen(false));
+  const { current: handleClickOpenDeleteDialog } = useRef(() => setOpenDeleteDialog(true));
+  const { current: handleCloseDeleteDialog } = useRef(() => setOpenDeleteDialog(false));
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleClickOpenDeleteDialog = () => {
-    setOpenDeleteDialog(true);
-  };
+  const { current: handleChange } = useRef((e: React.ChangeEvent<HTMLInputElement>): void => {
+    setFeedTitle(e.target.value);
+  });
 
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
-  };
-
-  const handleConfirmEdit = () => {
+  const handleConfirmEdit = useCallback(() => {
     editFeedTitle({ id: feed.id, title: feedTitle.trim() });
-    handleClose();
+
     setItems((prevState: any[]) => prevState.map(item => {
       if (item.id === feed.id) {
         return {
           ...item,
           title: feedTitle.trim(),
-        }
+        };
       }
 
       return item;
     }));
-  };
 
-  const handleConfirmDelete = () => {
-    deleteFeed({ id: feed.id });
-    handleCloseDeleteDialog();
-    setItems((prevState: any[]) => {
-      const newState = [...prevState];
-      const feedIndex = newState.findIndex(item => item.id === feed.id);
+    handleClose();
+  }, [feed.id, feedTitle]);
 
-      newState.splice(feedIndex, 1);
+  const handleConfirmDelete = useCallback(
+    () => {
+      deleteFeed({ id: feed.id });
+      handleCloseDeleteDialog();
+      setItems((prevState: any[]) => {
+        const newState = [...prevState];
+        const feedIndex = newState.findIndex(item => item.id === feed.id);
 
-      return newState;
-    });
-  };
+        newState.splice(feedIndex, 1);
+
+        return newState;
+      });
+    },
+    [feed.id],
+  );
 
   return (
     <Grid item xs={12} md={6}>
@@ -96,7 +96,7 @@ export const FeedAdminCard: React.FC<Props> = ({ feed, setItems }) => {
           </CardContent>
           <Box>
             <Box>
-              <Button variant="outlined" onClick={handleClickOpen}>
+              <Button variant="outlined" onClick={handleOpen}>
                 Edit feed title
               </Button>
               <Dialog open={open} onClose={handleClose}>
@@ -113,9 +113,7 @@ export const FeedAdminCard: React.FC<Props> = ({ feed, setItems }) => {
                     fullWidth
                     variant="standard"
                     value={feedTitle}
-                    onChange={(e) => {
-                      setFeedTitle(e.target.value);
-                    }}
+                    onChange={handleChange}
                   />
                 </DialogContent>
                 <DialogActions>

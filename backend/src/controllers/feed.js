@@ -31,13 +31,11 @@ const feedController = {
       const { id } = req.params;
       const { title } = req.body;
 
-      console.log('==========')
       const data = await feedService.updateById({
         title,
         id,
       });
 
-      console.log('+++++++++');
       return res.json({ success: true, data });
     } catch (error) {
       return res.status(500).json({ success: false, message: error?.message, error });
