@@ -65,7 +65,7 @@ const feedService = {
       return new Error(error);
     }
   },
-  getFeeds: async ({ from, to, search = '' }) => {
+  getFeeds: async ({ from = 0, to = 3, search = '' }) => {
     try {
       const limit = Number(to) - Number(from);
       const offset = Number(from);
@@ -84,6 +84,43 @@ const feedService = {
       console.error(error);
 
       return new Error(error);
+    }
+  },
+  updateById: async ({ title, id }) => {
+    try {
+      console.log('----');
+      console.log('{ title, id }', { title, id });
+      const feed = await FeedArticle.findOne({ where: { id: +id } });
+
+      console.log('feed', feed);
+      if (!feed) {
+        return new Error('Feed do not found');
+      }
+
+      const data = await FeedArticle.update({
+        title,
+      }, {
+        where: { id },
+      });
+
+      return new Promise((resolve) => resolve(data));
+    } catch (error) {
+      return new Promise((resolve, reject) => reject(error));
+    }
+  },
+  deleteById: async (id) => {
+    try {
+      const feed = await FeedArticle.findByPk(id);
+
+      if (!feed) {
+        return new Error('Feed do not found');
+      }
+
+      const data = await FeedArticle.destroy({ where: { id } });
+
+      return new Promise((resolve) => resolve(data));
+    } catch (error) {
+      return new Promise((resolve, reject) => reject(error));
     }
   },
 };

@@ -1,4 +1,5 @@
 const feedService = require('../services/feed');
+const userService = require('../services/user');
 
 const feedController = {
   getFeeds: async (req, res) => {
@@ -23,6 +24,33 @@ const feedController = {
       return { success: false, message: 'Bad request! Url is required' };
     } catch (error) {
       return { success: false, message: error?.message, error };
+    }
+  },
+  updateById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title } = req.body;
+
+      console.log('==========')
+      const data = await feedService.updateById({
+        title,
+        id,
+      });
+
+      console.log('+++++++++');
+      return res.json({ success: true, data });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error?.message, error });
+    }
+  },
+  deleteById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const data = await feedService.deleteById(id);
+
+      return res.json({ success: true, data });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error?.message, error });
     }
   },
 };

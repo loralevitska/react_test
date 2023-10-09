@@ -1,10 +1,5 @@
 const jwt = require('jsonwebtoken');
 const userService = require('../services/user');
-/* eslint-disable */
-
-// const feedUrl = 'https://netflixtechblog.com/feed';
-const feedUrl = 'https://www.freecodecamp.org/news/rss/';
-
 
 const userController = {
   // eslint-disable-next-line consistent-return

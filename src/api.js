@@ -15,8 +15,8 @@ export const signUp = (user) => {
   return axios.post(`${BASE_URL}`, user);
 };
 
-export const getFeeds = ({ from, to }) => {
-  return axios.get(`${BASE_URL}?from=${from}&to=${to}`);
+export const getFeeds = ({ from, to, search = '' }) => {
+  return axios.get(`${BASE_URL}?from=${from}&to=${to}&search=${search}`);
 };
 
 export const signIn = async (data) => {
@@ -32,12 +32,19 @@ export const signIn = async (data) => {
 };
 
 export const getUsers = () => {
-  // eslint-disable-next-line no-console
-  console.log('here token', localStorage.getItem('token'));
+  return axiosUserInstance.get(`${BASE_URL}/users`);
+};
 
-  return axios.get(`${BASE_URL}/users`, {
-    headers: {
-      'access-token': localStorage.getItem('token'),
-    },
-  });
+export const editFeedTitle = ({ id, title }) => {
+  // eslint-disable-next-line no-console
+  console.log('----', { id, title });
+
+  return axiosUserInstance.put(`${BASE_URL}/feed/${id}`, { title });
+};
+
+export const deleteFeed = ({ id }) => {
+  // eslint-disable-next-line no-console
+  console.log('----', { id });
+
+  return axiosUserInstance.delete(`${BASE_URL}/feed/${id}`);
 };

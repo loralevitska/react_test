@@ -20,8 +20,6 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 import { signupUser } from '../../store/UserSlice';
 
-require('yup-phone');
-
 type FormValues = {
   email: string,
   password: string,

@@ -7,9 +7,7 @@ function Feeds() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    console.log('getUsers started')
     getUsers().then(response => {
-      console.log('response', response)
       setUsers(response.data.data)
     });
   }, []);

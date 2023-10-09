@@ -15,5 +15,7 @@ router.put('/users/:id', userController.verifyJwt, userController.updateById);
 router.delete('/users/:id', userController.verifyJwt, userController.deleteById);
 
 router.get('/', feedController.getFeeds);
+router.put('/feed/:id', userController.verifyJwt, feedController.updateById);
+router.delete('/feed/:id', userController.verifyJwt, feedController.deleteById);
 
 module.exports = router;

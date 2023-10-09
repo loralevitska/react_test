@@ -14,14 +14,10 @@ type Props = {
     link: string,
     pubDate: string,
   };
-  feedTitle: string,
 };
 
-export const Feed: React.FC<Props> = ({ feed, feedTitle }) => {
+export const Feed: React.FC<Props> = ({ feed }) => {
   const { title, link, pubDate } = feed;
-
-  // eslint-disable-next-line no-console
-  console.log('feed', feed);
 
   return (
     <Grid item xs={12} md={6}>
@@ -34,9 +30,6 @@ export const Feed: React.FC<Props> = ({ feed, feedTitle }) => {
             <Typography variant="subtitle1" color="text.secondary">
               {pubDate.slice(0, 16)}
             </Typography>
-            <Typography variant="subtitle1" paragraph>
-              Etiam porta sem malesuada magna mollis euismod.
-            </Typography>
             <Typography variant="subtitle1" color="primary">
               Continue reading...
             </Typography>
@@ -46,8 +39,8 @@ export const Feed: React.FC<Props> = ({ feed, feedTitle }) => {
               component="img"
               sx={{ width: 60, display: { xs: 'none', sm: 'block' } }}
               style={{ objectFit: 'contain' }}
-              image="https://miro.medium.com/v2/resize:fill:48:48/1*ty4NvNrGg4ReETxqU2N3Og.png"
-              alt={feedTitle}
+              image="https://thenounproject.com/api/private/icons/1171202/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0"
+              alt="media icon"
             />
           </CardContent>
         </Card>

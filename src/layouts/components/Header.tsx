@@ -29,9 +29,6 @@ function Header() {
 
   const { user } = useSelector((state: State) => state.user);
 
-  // eslint-disable-next-line no-console
-  console.log('user', user);
-
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate('/signin');

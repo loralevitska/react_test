@@ -1,17 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import { useSelector } from 'react-redux';
 
 import Pagination from '@mui/material/Pagination';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, MenuItem } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
 import Header from '../components/Header';
 import { getFeeds } from '../../api';
 import { Feed } from '../components/Feed';
-/* eslint-disable */
+import { FeedAdminCard } from '../feeds/FeedAdminCard';
+
 const PAGE_SIZE = 3;
+const PAGE_SIZES = [3, 5, 10];
 
 type State = {
   user: {
@@ -21,50 +31,130 @@ type State = {
   }
 };
 
-function Home() {
-  const { user } = useSelector((state: State) => state.user);
-  const [feed, setFeed] = useState({});
-  const [items, setItems] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [pagination, setPagination] = useState({
-    count: 0,
-    from: searchParams.get('from') || 0,
-    to: searchParams.get('to') || PAGE_SIZE,
-  });
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  // const handleAuth = () => {
-  //   axios.get('http:http://localhost:5005/api/v1/checkAuth')
-  //       .then(res => console.log(res))
-  //       .catch(err => console.log(err));
-  // }
+function useDebounce<T>(
+  initialValue: T,
+  time: number,
+): [T, T, React.Dispatch<T>] {
+  const [value, setValue] = useState<T>(initialValue);
+  const [debouncedValue, setDebouncedValue] = useState<T>(initialValue);
 
   useEffect(() => {
-    setIsLoading(true);
-    getFeeds({ from: pagination.from, to: pagination.to }).then(({ data: response }) => {
-      const { feed: feedData, items: itemsData, count } = response.data;
+    const debounce = setTimeout(() => {
+      setDebouncedValue(value);
+    }, time);
 
-      setFeed(feedData);
+    return () => {
+      clearTimeout(debounce);
+    };
+  }, [value, time]);
+
+  return [debouncedValue, value, setValue];
+}
+
+function Home() {
+  const { user } = useSelector((state: State) => state.user);
+  const [items, setItems] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [debouncedValue, search, setSearch] = useDebounce<string>('', 300);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    count: 0,
+    from: Number(searchParams.get('from')) || 0,
+    to: Number(searchParams.get('to')) || PAGE_SIZE,
+    search: searchParams.get('search') || '',
+    pageSize: Number(searchParams.get('pageSize')) || PAGE_SIZE,
+  });
+
+  // eslint-disable-next-line no-console
+  console.log('user', user);
+  useEffect(() => {
+    setIsLoading(true);
+    getFeeds(
+      { from: pagination.from, to: pagination.to, search: debouncedValue },
+    ).then(({ data: response }) => {
+      const { rows: itemsData, count } = response.data;
+
       setItems(itemsData);
       setPagination(currentState => ({ ...currentState, count }));
     })
       .finally(() => {
         setIsLoading(false);
       });
-  }, [pagination.from, pagination.to]);
+  }, [pagination.from, pagination.to, pagination.pageSize, debouncedValue]);
 
-  const handlePageChange = (event, page) => {
-    const from = (page - 1) * PAGE_SIZE;
-    const to = (page - 1) * PAGE_SIZE + PAGE_SIZE;
+  const handlePageChange = useCallback((event, page) => {
+    const from = (page - 1) * pagination.pageSize;
+    const to = (page - 1) * pagination.pageSize + pagination.pageSize;
 
     setPagination(currentState => ({ ...currentState, from, to }));
-    setSearchParams({ from, to });
-  };
+    setSearchParams(currentState => ({ ...currentState, from, to }));
+  }, [pagination.pageSize]);
+
+  const { current: handleSearchChange } = useRef((e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { value } = e.target;
+
+    setSearch(value);
+    setPagination(currentState => ({ ...currentState, search: value }));
+  });
+
+  const { current: handleSelectChange } = useRef((e: React.ChangeEvent<HTMLInputElement>): void => {
+    const value = +e.target.value;
+
+    setPagination(currentState => ({
+      ...currentState, from: 0, to: value, pageSize: value,
+    }));
+    setSearchParams(currentState => ({ ...currentState, pageSize: value }));
+  });
+
+  const paginationPage = useMemo(
+    () => Math.ceil((pagination.to) / pagination.pageSize),
+    [pagination.to, pagination.pageSize],
+  );
+
+  const paginationCount = useMemo(
+    () => Math.ceil(pagination.count / pagination.pageSize),
+    [pagination.count, pagination.pageSize],
+  );
 
   return (
     <Container>
       <Header />
+
+      <Box
+        display="flex"
+        justifyContent="space-evenly"
+        alignItems="center"
+        style={{ margin: '20px 0px' }}
+      >
+        <TextField
+          id="input-search"
+          label="Search"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          value={search}
+          variant="outlined"
+          onChange={handleSearchChange}
+        />
+        <TextField
+          id="select-page-size"
+          select
+          label="Page size"
+          defaultValue={pagination.pageSize}
+          helperText="Please select page size"
+          onChange={handleSelectChange}
+        >
+          {PAGE_SIZES.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Box>
 
       <Box
         display="flex"
@@ -74,8 +164,8 @@ function Home() {
       >
         <Pagination
           color="primary"
-          page={Math.ceil((pagination.to) / PAGE_SIZE)}
-          count={Math.ceil(pagination.count / PAGE_SIZE)}
+          page={paginationPage}
+          count={paginationCount}
           onChange={handlePageChange}
         />
       </Box>
@@ -97,13 +187,22 @@ function Home() {
           columns={6}
         >
           {items.length
-                    && items.map(feedItem => (
-                      <Feed
-                        key={feedItem.isoDate}
-                        feed={feedItem}
-                        feedTitle={feed.title}
-                      />
-                    ))}
+                    && items.map(feedItem => {
+                      return user?.id ? (
+                        <FeedAdminCard
+                          key={feedItem.isoDate}
+                          feed={feedItem}
+                          setItems={setItems}
+                        />
+                      ) : (
+                        (
+                          <Feed
+                            key={feedItem.isoDate}
+                            feed={feedItem}
+                          />
+                        )
+                      );
+                    })}
         </Grid>
       )}
     </Container>
